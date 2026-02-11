@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>剧本杀-角色1</title>
+    <style>
+        /* 全局样式：适配所有屏幕 */
+        html, body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation; /* 优化移动端点击体验 */
+        }
+        .image-wrapper {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer; /* 电脑端显示点击光标 */
+            -webkit-tap-highlight-color: transparent; /* 去除移动端点击高亮 */
+        }
+        .full-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 保持图片比例且完整显示 */
+            display: block;
+            margin: 0 auto; /* 图片居中 */
+        }
+        /* 加载提示：适配小屏 */
+        .loading-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: clamp(16px, 2.5vw, 24px);
+            z-index: 998;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-wrapper" id="imageWrapper" onclick="switchImage()">
+        <!-- 加载提示 -->
+        <div class="loading-tip" id="loadingTip">加载中...</div>
+        <img class="full-image" id="currentImg" src="" alt="剧情图片">
+    </div>
+
+    <script>
+        const scenes = [
+            // 第一幕争执
+            {
+                name: "第一幕争执",
+                photos: [
+                    "./图片/幕/微信图片_20251118190731_187_8.png",
+                    "./图片/商人/第一幕/沈氏住宅.png",
+                    "./图片/商人/第一幕/院门口.png",
+                    "./图片/商人/第一幕/微信图片_20260130151311_394_8.png",
+                    "./图片/商人/第一幕/忍耐.png",
+                    "./图片/商人/第一幕/美人.png",
+                    "./图片/商人/第一幕/砸杯子.png",
+                    "./图片/商人/第一幕/父子争执.png",
+                    "./图片/商人/第一幕/砸杯子 (1).png"
+                ]
+            },
+            // 第一幕遇见
+            {
+                name: "第一幕遇见",
+                photos: [
+                    "./图片/商人/第一幕/Slide 16_9 - 3.jpg",
+                    "./图片/商人/第一幕/Slide 16_9 - 2.jpg",
+                    "./图片/商人/第一幕/Slide 16_9 - 1.jpg",   
+                    "./图片/商人/第一幕/Slide 16_9 - 4.jpg",
+                    "./图片/商人/第一幕/女子被日军追捕 1.jpg",
+                    "./图片/商人/第一幕/Slide 16_9 - 5.jpg"
+                ]
+            },
+            // 第一幕回忆
+            {
+                name: "第一幕回忆",
+                photos: [
+                    "./图片/商人/第一幕/image 1.jpg",
+                    "./图片/商人/第一幕/image 2.jpg",
+                    "./图片/商人/第一幕/image 3.jpg",
+                    "./图片/商人/第一幕/image 4.jpg",
+                    "./图片/商人/第一幕/image 5.jpg",
+                    "./图片/商人/第一幕/image 6.jpg",
+                    "./图片/商人/第一幕/image 7.jpg",
+                    "./图片/商人/第一幕/image 8.jpg",
+                    "./图片/商人/第一幕/image 9.jpg",
+                    "./图片/商人/第一幕/image 10.jpg",
+                    "./图片/商人/第一幕/剧情提示.jpg",
+                    "./图片/商人/第一幕/隐藏线索.jpg"
+                ]
+            },
+            // 第一幕闪回
+            {
+                name: "第一幕闪回",
+                photos: [
+                    "./图片/商人/第一幕/身份总结.jpg",
+                    "./图片/商人/第一幕/记忆闪回.jpg",
+                    "./图片/商人/第一幕/回忆.jpg",
+                    "./图片/商人/第一幕/提示胜利书局.jpg"
+                ]
+            },
+            // 第二幕暗示
+            {
+                name: "第二幕暗示",
+                photos: [
+                    "./图片/幕/微信图片_20251118190731_188_8.png",
+                    "./图片/商人/第二幕/剧情提示.png",
+                    "./图片/商人/第二幕/整理书本.png",
+                    "./图片/商人/第二幕/暗示昨日女子.png",
+                    "./图片/商人/第二幕/惊讶.png",
+                    "./图片/商人/第二幕/邀请移步.png"
+                ]
+            },
+            // 第二幕进入
+            {
+                name: "第二幕进入",
+                photos: [
+                    "./图片/商人/第二幕/随着老板进入里屋.png",
+                    "./图片/商人/第二幕/书局场景.png",
+                    "./图片/商人/第二幕/手枪咔哒.png",
+                    "./图片/商人/第二幕/询问.png",
+                    "./图片/商人/第二幕/表明诚意.png",
+                ]
+            }
+        ];
+
+        // 页面状态管理
+        let state = {
+            currentSceneIndex: 0,
+            currentPhotoIndex: 0
+        };
+
+        // DOM元素缓存
+        const imageWrapper = document.getElementById('imageWrapper');
+        const currentImg = document.getElementById('currentImg');
+        const loadingTip = document.getElementById('loadingTip');
+
+        // 初始化加载
+        window.onload = function() {
+            try {
+                loadCurrentImage();
+            } catch (e) {
+                console.error("初始化加载失败：", e);
+                alert("页面加载失败，请刷新重试！");
+            }
+        };
+
+        // 加载当前图片
+        function loadCurrentImage() {
+            loadingTip.style.display = "block";
+            const { currentSceneIndex, currentPhotoIndex } = state;
+            if (!scenes[currentSceneIndex] || !scenes[currentSceneIndex].photos[currentPhotoIndex]) {
+                alert("当前剧情不存在，请返回上一页！");
+                window.history.back();
+                return;
+            }
+
+            const currentScene = scenes[currentSceneIndex];
+            const currentItem = currentScene.photos[currentPhotoIndex];
+            const imgUrl = (typeof currentItem === "string" ? currentItem : currentItem.url) + "?t=" + Date.now();
+            
+            currentImg.onload = function() {
+                loadingTip.style.display = "none";
+            };
+
+            currentImg.onerror = function() {
+                loadingTip.style.display = "none";
+                currentImg.src = "https://via.placeholder.com/1920x1080?text=图片加载失败，请点击屏幕继续";
+            };
+
+            currentImg.src = imgUrl;
+        }
+
+        // 切换图片：核心修改，使用相对路径跳转
+        function switchImage() {
+            const currentScene = scenes[state.currentSceneIndex];
+            let newPhotoIndex = state.currentPhotoIndex + 1;
+            let newSceneIndex = state.currentSceneIndex;
+
+            // 检查是否是最后一个场景的最后一张图
+            if (state.currentSceneIndex === scenes.length - 1 && newPhotoIndex >= currentScene.photos.length) {
+                // 跳转到子目录中的 index.html
+                window.location.href = "./final_1/index.html";
+                return;
+            }
+
+            // 正常翻页逻辑
+            if (newPhotoIndex >= currentScene.photos.length) {
+                newPhotoIndex = 0;
+                newSceneIndex = (state.currentSceneIndex + 1) % scenes.length;
+            }
+
+            state.currentSceneIndex = newSceneIndex;
+            state.currentPhotoIndex = newPhotoIndex;
+            loadCurrentImage();
+        }
+    </script>
+</body>
+</html>

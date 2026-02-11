@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>选择你的角色</title>
+    <style>
+        /* 全局样式：基于视口单位，适配所有屏幕 */
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #e63946;
+            overflow: hidden;
+            font-family: "Microsoft Yahei", sans-serif; /* 适配中文显示 */
+        }
+        /* 容器：铺满屏幕，弹性布局保证内容居中 */
+        .role-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2vw; /* 内边距=屏幕宽度2%，替代固定10px */
+            box-sizing: border-box; /* 内边距不影响容器总尺寸 */
+        }
+        /* 标题样式：按屏幕比例缩放 */
+        .title {
+            font-size: 3.5vw; /* 文字大小=屏幕宽度3.5%（原18px） */
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 2vw; /* 底部间距=屏幕宽度2%（原10px） */
+            line-height: 1.2; /* 防止文字换行溢出 */
+        }
+        /* 角色网格：占满剩余空间，弹性布局均分 */
+        .role-grid {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1; /* 占满容器剩余高度 */
+            gap: 2vw; /* 列之间的间距=屏幕宽度2%，适配所有屏幕 */
+            padding: 0 1vw; /* 左右留白，避免按钮贴边 */
+        }
+        /* 列容器：宽度自适应，弹性布局垂直排列 */
+        .col {
+            width: 48%; /* 略宽于原45%，小屏更友好 */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5vw; /* 按钮间距=屏幕宽度1.5%（原7.5px） */
+        }
+        /* 角色按钮：核心适配，全视口单位 */
+        .role-btn {
+            width: 100%;
+            /* 按钮高度=屏幕高度8%，且最小高度40px（避免小屏太矮） */
+            height: clamp(40px, 8vh, 80px); 
+            line-height: clamp(40px, 8vh, 80px); /* 文字垂直居中 */
+            border-radius: 2vw; /* 圆角=屏幕宽度2%（原8px） */
+            background-color: #fff;
+            color: #e63946;
+            /* 文字大小：屏幕宽度2.5%，最小14px，最大20px */
+            font-size: clamp(14px, 2.5vw, 20px); 
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            z-index: 999;
+            /* 按钮hover/点击效果，提升交互体验 */
+            transition: background-color 0.2s ease;
+        }
+        /* 按钮hover状态（电脑端） */
+        .role-btn:hover {
+            background-color: #f8f8f8;
+            color: #d12f3b;
+        }
+        /* 按钮点击状态 */
+        .role-btn:active {
+            background-color: #eee;
+        }
+        /* 小屏适配（手机竖屏）：优化布局和文字 */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 5vw; /* 手机端标题更大，更清晰 */
+            }
+            .role-grid {
+                flex-direction: column; /* 手机端改为上下两列，避免按钮太窄 */
+                gap: 1.5vh;
+            }
+            .col {
+                width: 100%;
+                flex-direction: row; /* 每列的按钮横向排列 */
+                justify-content: space-between;
+                gap: 1.5vw;
+            }
+            .role-btn {
+                width: 31%; /* 手机端每行3个按钮，均分宽度 */
+                font-size: 3.5vw; /* 手机端文字更大 */
+                height: clamp(50px, 10vh, 90px);
+                line-height: clamp(50px, 10vh, 90px);
+            }
+        }
+        /* 超小屏适配（手机窄屏） */
+        @media (max-width: 480px) {
+            .role-btn {
+                font-size: 4vw;
+                border-radius: 3vw; /* 圆角更大，更适配小屏 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="role-container">
+        <div class="title">请选择你的角色</div>
+        <div class="role-grid">
+            <div class="col left-col">
+                <button class="role-btn" onclick="gotoRole(1)">商人</button>
+                <button class="role-btn" onclick="gotoRole(2)">军人</button>
+                <button class="role-btn" onclick="gotoRole(3)">日本军人</button>
+            </div>
+            <div class="col right-col">
+                <button class="role-btn" onclick="gotoRole(4)">僧人</button>
+                <button class="role-btn" onclick="gotoRole(5)">文职</button>
+                <button class="role-btn" onclick="gotoRole(6)">伙计</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 角色跳转逻辑，保留原功能，新增容错处理
+        function gotoRole(role) {
+            // 检查对应角色文件是否存在（简单容错）
+            const rolePageMap = {
+                1: 'role1.html',
+                2: 'role2.html',
+                3: 'role3.html',
+                4: 'role4.html',
+                5: 'role5.html',
+                6: 'role6.html'
+            };
+            const targetPage = rolePageMap[role];
+            if (targetPage) {
+                window.location.href = targetPage;
+            } else {
+                alert('该角色剧情暂未开放，请选择其他角色！');
+            }
+        }
+    </script>
+</body>
+</html>

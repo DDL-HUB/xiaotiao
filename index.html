@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>剧本杀</title>
+    <style>
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+        /* 父容器：铺满屏幕，作为按钮定位参考 */
+        .img-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        .full-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn {
+            /* 绝对定位（更适合按屏幕比例定位，且不破坏布局） */
+            position: absolute;
+            /* 关键：用vw/vh替代px，位置按屏幕比例固定 */
+            bottom: 11vh;    /* 距离屏幕底部2%（原20px→按高度比例） */
+            right: 18vw;     /* 距离屏幕右侧7%（原70px→按宽度比例） */
+            /* 按钮大小按屏幕宽度比例缩放 */
+            width: 19vw;   /* 按钮宽度=屏幕宽度的7.5%（原75px） */
+            height: 12vh;    /* 按钮高度=屏幕高度的2%（原20px） */
+            line-height: 10vh;/* 文字垂直居中，和高度一致 */
+            /* 样式保留，文字大小也按比例 */
+            background-color: rgb(201, 78, 78);
+            color: white;
+            border-radius: 1vh; /* 圆角按高度比例（原10px） */
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.4vw; /* 文字大小=屏幕宽度的1.4%（原14px） */
+            z-index: 999;    /* 确保按钮在图片上方 */
+            border: none;    /* 清除默认边框 */
+            padding: 0;      /* 清除默认内边距 */
+        }
+        /* 小屏适配：避免按钮文字太小 */
+        @media (max-width: 768px) {
+            .btn {
+                font-size: 3vw;   /* 手机端文字放大到3vw，更清晰 */
+                width: 15vw;      /* 手机端按钮宽度放大到15vw */
+                height: 4vh;      /* 手机端按钮高度放大到4vh */
+                line-height: 4vh; /* 文字居中 */
+                border-radius: 2vh;/* 圆角同步放大 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="img-container">
+        <!-- 已替换为相对路径：对应“网页代码/图片/封面/Frame 1.png” -->
+        <img src="./图片/封面/Frame 1.png" class="full-img" alt="封面">
+        <button class="btn" onclick="navigateToIndex2()">進入劇本殺</button>
+    </div>
+
+    <script>
+        function navigateToIndex2() {
+            // 跳转路径也是相对路径（index2.html和index.html在同一文件夹）
+            window.location.href = 'index2.html';
+        }
+    </script>
+</body>
+</html>
